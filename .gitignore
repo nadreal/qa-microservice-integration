@@ -1,0 +1,24 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environments
+env/
+venv/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Docker
+*.env
+
+# Mac / Windows
+.DS_Store
+Thumbs.db
