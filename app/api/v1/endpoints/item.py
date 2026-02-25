@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 from typing import List
 
 from app.db.session import get_db
@@ -27,11 +28,16 @@ async def create_item(
     db: AsyncSession = Depends(get_db)
     ):
     service = ItemService(db)
-    return await service.create_item(item)
+    try:
+        return await service.create_item(item)  
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=409, detail="item with this name already exists")
+        raise HTTPException(status_code=418, detail="create_item reached")
 
 @router.put("/{item_id}", response_model=ItemRead)
 async def update_item(item_id: int, item_update:ItemUpdate, db: AsyncSession = Depends(get_db)):
-    service = ItemService(db)
+    service = ItemService(db)    
     updated = await service.update_item(item_id, item_update)
     if not updated:
         raise HTTPException(status_code=404, detail="Item not found")

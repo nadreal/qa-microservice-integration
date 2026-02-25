@@ -52,22 +52,25 @@
 - Async-first design: all DB calls are asynchronous, improving scalability.
 - Test isolation: services can be swapped with in-memory implementations for fast unit tests without touching the database.
 
-## CI-CD Integration Overview
- - A GitHub Actions workflow is included to automatically run tests on each commit
- - Workflow file: .github/workflows/ci-cd-pipeline.yml
- - Triggered on: push and pull_request events
+## CI-CD Integration with GitHub Actions workflow
+
+- Starts PostgreSQL service container
+- Installs dependencies
+- Runs pytest
+- Publishes Allure report
+
+Triggered on:
+- push
+- pull_request
 
 ## API endpoints
 
-- **GET `/health`** – API health check. Returns: {"status": "ok"}
-
-- **GET `/users/{id}`** – Get a user by ID. Returns user JSON
-
-- **POST `/users/`** – Create a new user. Send JSON: 
-
-- **UPDATE `/user/{id}`** - Update existing user. 
-
-- **DELETE `/users/{id}`** - Delete a user by ID.
+- GET `/api/v1/health`
+- GET `/api/v1/items/`
+- GET `/api/v1/items/{id}`
+- POST `/api/v1/items/`
+- PUT `/api/v1/items/{id}`
+- DELETE `/api/v1/items/{id}`
 
 ## Test Reporting
 

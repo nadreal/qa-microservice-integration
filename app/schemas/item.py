@@ -1,19 +1,23 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
-from fastapi import Form
 
-class ItemCreate(BaseModel):
+class ItemBase(BaseModel):
     name: str
     description: Optional[str] = None
+
+class ItemRead(ItemBase):
+    id:int
+
+    model_config = ConfigDict(from_attributes=True)
+    
+class ItemCreate(ItemBase):
+    pass
     
 class ItemUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
 
-class ItemRead(BaseModel):
-    id: int
-    name: str
-    description: Optional[str]
+class ItemRead(ItemBase):
+    id:int
 
-    class Config:
-        orm_mode = True  # allows returning SQLAlchemy models directly
+    model_config = ConfigDict(from_attributes=True)

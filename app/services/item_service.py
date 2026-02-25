@@ -22,16 +22,18 @@ class ItemService:
         self.session.add(db_item)
         try:
             await self.session.commit()
+            await self.session.refresh(db_item)
+            return db_item
         except IntegrityError:
             await self.session.rollback()
-        await self.session.refresh(db_item)
-        return db_item
+            raise
+        
     
     async def update_item(self, item_id: int, update_item: ItemUpdate):
         db_item = await self.get_item_by_id(item_id)
-        
         if not db_item:
             return None
+        
         if update_item.name is not None:
             db_item.name = update_item.name
         if update_item.description is not None:
@@ -39,20 +41,23 @@ class ItemService:
         
         try:
             await self.session.commit()
+            await self.session.refresh(db_item)
+            return db_item    
         except IntegrityError:
             await self.session.rollback()
-        await self.session.refresh(db_item)
-        return db_item
-    
+            raise
+        
     async def delete_item(self, item_id: int):
         item = await self.get_item_by_id(item_id)
         if not item:
             return None
         try:
             await self.session.delete(item)
+            await self.session.commit()
+            return item
         except IntegrityError: 
-            await self.session.refresh(db_item)
-        await self.session.commit()
-        return item 
+            await self.session.rollback()
+            raise
+       
     
     
