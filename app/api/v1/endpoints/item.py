@@ -22,7 +22,7 @@ async def get_item(item_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Item not found")
     return item
 
-@router.post("/", response_model=ItemRead)
+@router.post("/", response_model=ItemRead, status_code=201)
 async def create_item(
     item: ItemCreate, 
     db: AsyncSession = Depends(get_db)
@@ -32,13 +32,16 @@ async def create_item(
         return await service.create_item(item)  
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=409, detail="item with this name already exists")
-        raise HTTPException(status_code=418, detail="create_item reached")
+        raise HTTPException(status_code=409, detail="item with this name already exists")        
 
 @router.put("/{item_id}", response_model=ItemRead)
 async def update_item(item_id: int, item_update:ItemUpdate, db: AsyncSession = Depends(get_db)):
-    service = ItemService(db)    
-    updated = await service.update_item(item_id, item_update)
+    service = ItemService(db)  
+    try:  
+        updated = await service.update_item(item_id, item_update)
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Item with this name already exists")
+    
     if not updated:
         raise HTTPException(status_code=404, detail="Item not found")
     return updated

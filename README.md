@@ -6,27 +6,34 @@
 [![Allure Test Report](https://img.shields.io/badge/%20Report-Allure-purple)](https://nadreal.github.io/qa-microservice-integration/)
 
 ## Project Overview
- The project is a **FastAPI + PostgreSQL** backend microservice for **CRUD** operations. Designed with a modular and async-first architecture, it demonstrates best practices for building and testing microservices:
+ The project is a production style **FastAPI + PostgreSQL** microservice implementing full **CRUD** operations. Designed with a modular, async-first architecture, it demonstrates backend engineering best practices for building and validating microservices:
 
-- Modular architecture: clear separation of api, services, db, and models
-- Async database operations: powered by SQLAlchemy with async sessions and asyncpg
-- Testing-ready: service abstraction for deterministic, isolated tests
-- Docker-ready: docker-compose setup for easy development
+- Layered architecture (API → Service → ORM → Database)
+- Explicit transaction handling and rollback management
+- Proper HTTP status mapping (e.g. 409 Conflict for unique constraint violations)
+- Integration testing against a real PostgreSQL database
+- Automated CI validation with GitHub Actions and Allure reporting
+- Docker-based development environment
 
 ## Tech Stack
  - Backend: FastAPI (async)
  - ORM: SQLAlchemy 2.x (async ORM)
- - Database: PosgreSQL,asyncpg
+ - Database: PosgreSQL (asyncpg driver)
  - Server: Uvicorn
  - Validation: Pydantic
- - Upcoming: Alembic migrations, Load testing (Locust), Kubernetes deplyment
+ - CI/CD: GitHub Actions
 
+ **Planned extensions:**
+ - Alembic migrations
+ - Load testing (Locust)
+ - Container orchestration (Kubernetes)
+ - Test reporting (Allure)
+ 
 ## Project Structure 
 ```
-├── workflows/
+├── .github/workflows/
 │   └── ci-cd-pipeline.yml   # CI/CD workflow
 ├── app/
-│    │
 │    ├── api\v1/
 │    ├── ├── endpoints/
 │    │   │   ├── health.py
@@ -40,17 +47,22 @@
 │    │   └── session.py
 │    ├── models/
 │    ├── schemas/ 
-│    ├── service/
+│    ├── services/
 │    └── main.py
 ├── tests/
+│    ├── api/ 
+│    ├── integration/
+│    │   └── test_api_items.py
+│    └── unit/
 ├── docker-compose.yml
 ├── README.md
 ```
 ## Architecture Overview
 
-- Service abstraction: business logic lives in service classes (e.g., ItemService) separate from API endpoints.
-- Async-first design: all DB calls are asynchronous, improving scalability.
-- Test isolation: services can be swapped with in-memory implementations for fast unit tests without touching the database.
+- **Service abstraction:** Business logic resides in dedicated service classes (e.g., `ItemService`), keeping API endpoints thin and testable.
+- **Async-first design:** All database operations use async SQLAlchemy sessions to support scalable I/O handling.
+- **Transaction safety:** Explicit commit/rollback handling ensures session integrity after constraint violations.
+- **Test isolation:** Integration tests validate full request lifecycle; service layer enables isolated unit testing when needed.
 
 ## CI-CD Integration with GitHub Actions workflow
 

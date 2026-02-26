@@ -27,8 +27,7 @@ class ItemService:
         except IntegrityError:
             await self.session.rollback()
             raise
-        
-    
+            
     async def update_item(self, item_id: int, update_item: ItemUpdate):
         db_item = await self.get_item_by_id(item_id)
         if not db_item:
@@ -40,12 +39,12 @@ class ItemService:
             db_item.description = update_item.description
         
         try:
-            await self.session.commit()
-            await self.session.refresh(db_item)
-            return db_item    
+            await self.session.commit()           
         except IntegrityError:
             await self.session.rollback()
-            raise
+            raise #IMOPRTANT: bubble to AIP layr
+        await self.session.refresh(db_item)
+        return db_item    
         
     async def delete_item(self, item_id: int):
         item = await self.get_item_by_id(item_id)

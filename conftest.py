@@ -11,15 +11,17 @@ def client():
 
 @pytest.fixture
 def unique_item_payload():
-    return {
-        "name": f"TestItem_{uuid.uuid4().hex}",
-        "description": "TestDescription",
-    }
+    def make(description: str = "TestDescription", name_prefix: str = "TestItem"):
+        return {
+            "name": f"TestItem_{uuid.uuid4().hex}",
+            "description": "TestDescription",
+        }
+    return make
 
 @pytest.fixture
 def created_item(client, unique_item_payload):
-    r = client.post("/api/v1/items/", json=unique_item_payload)
-    assert r.status_code == 200, r.text
+    r = client.post("/api/v1/items/", json=unique_item_payload())
+    assert r.status_code == 201, r.text
     item = r.json()
     yield item
 
