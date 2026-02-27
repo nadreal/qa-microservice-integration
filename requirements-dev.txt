@@ -1,5 +1,6 @@
 pytest==8.3.1
-pytest-asyncio>-0.23
+pytest-asyncio>=0.23
+allure-pytest
 httpx==0.24.1
 black
 isort

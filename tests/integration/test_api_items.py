@@ -1,14 +1,14 @@
 import pytest
 import httpx
 
-@pytest.mark.positive
-async def test_create_item_returns_id(created_item):
+@pytest.mark.integration
+def test_create_item_returns_id(created_item):
     assert "id" in created_item
     assert created_item["name"].startswith("TestItem_")
 
 
-@pytest.mark.positive
-async def test_get_item_by_id(client, created_item):
+@pytest.mark.integration
+def test_get_item_by_id(client, created_item):
     item_id = created_item["id"]
     response = client.get(f"/api/v1/items/{item_id}")
     assert response.status_code == 200
@@ -17,8 +17,8 @@ async def test_get_item_by_id(client, created_item):
     assert data["name"]== created_item["name"]
     
 
-@pytest.mark.positive
-async def test_delete_item(client, created_item):
+@pytest.mark.integration
+def test_delete_item(client, created_item):
     item_id = created_item["id"]
     response = client.delete(f"/api/v1/items/{item_id}")
     assert response.status_code in (200, 204)
@@ -26,40 +26,40 @@ async def test_delete_item(client, created_item):
     response = client.get(f"/api/v1/items/{item_id}")
     assert response.status_code == 404
        
-@pytest.mark.negative        
+@pytest.mark.integration        
 def test_get_missing_item_returns_404(client):     
     response = client.get(f"/api/v1/items/4444444")
     assert response.status_code == 404
     assert response.json()["detail"] == "Item not found"
     
     
-@pytest.mark.negative
+@pytest.mark.integration
 def test_delete_missing_item_returns_404(client):
     r = client.delete("/api/v1/items/4444444")
     assert r.status_code == 404
     assert r.json()["detail"] == "Item not found"
 
 
-@pytest.mark.negative
+@pytest.mark.integration
 def test_update_missing_item_returns_404(client):
     r = client.put("/api/v1/items/4444444", json={"name": "does_not_matter"})
     assert r.status_code == 404
     assert r.json()["detail"] == "Item not found"
 
 
-@pytest.mark.negative
+@pytest.mark.integration
 def test_create_missing_required_field_name_returns_422(client):
     r = client.post("/api/v1/items/", json={"description": "x"})
     assert r.status_code == 422  # Pydantic validation
 
 
-@pytest.mark.negative
+@pytest.mark.integration
 def test_create_name_wrong_type_returns_422(client):
     r = client.post("/api/v1/items/", json={"name": 123, "description": "x"})
     assert r.status_code == 422
 
 
-@pytest.mark.negative
+@pytest.mark.integration
 def test_create_duplicate_name_returns_409(client, unique_item_payload):    
     payload = unique_item_payload()
     r1 = client.post("/api/v1/items/", json=payload)
@@ -74,7 +74,7 @@ def test_create_duplicate_name_returns_409(client, unique_item_payload):
         client.delete(f"/api/v1/items/{item['id']}")
 
 
-@pytest.mark.negative
+@pytest.mark.integration
 def test_update_duplicate_name_returns_409(client, unique_item_payload):    
     p1 = unique_item_payload()
     p2 = unique_item_payload()
