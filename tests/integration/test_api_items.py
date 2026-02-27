@@ -21,7 +21,7 @@ def test_get_item_by_id(client, created_item):
 def test_delete_item(client, created_item):
     item_id = created_item["id"]
     response = client.delete(f"/api/v1/items/{item_id}")
-    assert response.status_code in (200, 204)
+    assert response.status_code == 204
    
     response = client.get(f"/api/v1/items/{item_id}")
     assert response.status_code == 404

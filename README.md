@@ -18,16 +18,17 @@
 ## Tech Stack
  - Backend: FastAPI (async)
  - ORM: SQLAlchemy 2.x (async ORM)
- - Database: PosgreSQL (asyncpg driver)
+ - Database: PostgreSQL (asyncpg driver)
  - Server: Uvicorn
  - Validation: Pydantic
  - CI/CD: GitHub Actions
+ - Test reporting (Allure)
 
  **Planned extensions:**
  - Alembic migrations
  - Load testing (Locust)
  - Container orchestration (Kubernetes)
- - Test reporting (Allure)
+
  
 ## Project Structure 
 ```
@@ -86,7 +87,7 @@ Triggered on:
 
 ## Test Reporting
 
-<!-- - Open Allure [Test Report ](https://nadreal.github.io/qa-microservice-integration)  -->
+- Open Allure [Test Report ](https://nadreal.github.io/qa-microservice-integration/index.html) 
 
 ## Author
 

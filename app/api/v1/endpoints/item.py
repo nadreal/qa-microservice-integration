@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException, Body, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from typing import List
@@ -40,16 +40,18 @@ async def update_item(item_id: int, item_update:ItemUpdate, db: AsyncSession = D
     try:  
         updated = await service.update_item(item_id, item_update)
     except IntegrityError:
+        await db.rollback()
         raise HTTPException(status_code=409, detail="Item with this name already exists")
     
     if not updated:
         raise HTTPException(status_code=404, detail="Item not found")
     return updated
 
-@router.delete("/{item_id}", response_model=ItemRead)
+@router.delete("/{item_id}", status_code=204)
 async def delete_item(item_id: int, db: AsyncSession = Depends(get_db)):
     service = ItemService(db)
     item = await service.delete_item(item_id)
+    
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    return item
+    return Response(status_code=204)
