@@ -72,7 +72,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest -q --maxfail=2 --disable-warnings --alluredir=allure-results
+          pytest -q --maxfail=2 --disable-warnings --cov=app --cov-report=xml --cov-report=html --alluredir=allure-results
 
       - name: Stop API
         if: always()

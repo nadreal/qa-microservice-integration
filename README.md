@@ -38,6 +38,7 @@
 │    ├── api\v1/
 │    ├── ├── endpoints/
 │    │   │   ├── health.py
+│    │   │   ├── root.py
 │    │   │   └── item.py
 │    │   ├── router.py
 │    ├── auth/
@@ -47,12 +48,16 @@
 │    │   └── initialise.py
 │    │   └── session.py
 │    ├── models/
+│    │   └── item.py
 │    ├── schemas/ 
+│    │   └── item.py
 │    ├── services/
+│    │   └── item_service.py
 │    └── main.py
 ├── tests/
 │    ├── api/ 
 │    ├── integration/
+│    │   └── test_api_items_update_list.py
 │    │   └── test_api_items.py
 │    └── unit/
 ├── docker-compose.yml
@@ -87,7 +92,8 @@ Triggered on:
 
 ## Test Reporting
 
-- Open Allure [Test Report ](https://nadreal.github.io/qa-microservice-integration/index.html) 
+- [ Allure Test Report ](https://nadreal.github.io/qa-microservice-integration/index.html) 
+- [ Coverage Report ](htmlcov/index.html)
 
 ## Author
 
