@@ -72,19 +72,34 @@ jobs:
 
       - name: Run tests        
         run: |
-          pytest -v -s --maxfail=2 --disable-warnings --cov=app --cov-report=xml --cov-report=html --alluredir=allure-results
+          pytest -v -s \
+            --maxfail=2 \
+            --disable-warnings \
+            --cov=app \
+            --cov-report=term \
+            --cov-report=html:htmlcov \
+            --cov-report=xml \
+            --alluredir=allure-results
 
       - name: Stop API
         if: always()
         run: |
           if [ -f uvicorn.pid ]; then kill $(cat uvicorn.pid) || true; fi
 
+      - name: Debug coverage before deploy
+        run: |
+          echo "=== HTMLCOV ==="
+          ls -R htmlcov || true
+
+          echo "=== PUBLIC BEFORE COPY ==="
+          ls -R public || true 
+
       - name: Generate Allure / covarage report (using tobix/allure-cli)
         if: always()
         run: |
-          mkdir -p public
-          mkdir -p allure-report 
-          mkdir -p htmlcov
+          rm -rf public            
+          mkdir -p public/allure 
+          mkdir -p public/coverage
 
           if [ -d "allure-results" ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
            docker run --rm \
@@ -93,10 +108,18 @@ jobs:
           tobix/allure-cli:latest generate /results -o /report --clean
           else
             echo "<h1>No Allure results found</h1>" > allure-report/index.html
-          fi
+          fi         
 
-          cp -r allure-report public/allure || true
-          cp -r htmlcov public/coverage || true
+          if [ -d "htmlcov" ] && [ "$(ls -A htmlcov 2>/dev/null)" ]; then            
+            cp -r htmlcov/. public/coverage/
+
+          else
+            echo "<h1>No coverage generated</h1>" > public/coverage/index.html
+          fi
+          echo "=== PUBLIC ==="
+          ls -R public
+          cp -r allure-report/. public/allure || true
+   
 
       - name: Upload Allure results artifact
         if: always()
@@ -104,6 +127,13 @@ jobs:
         with:
           name: allure-results
           path: allure-results
+          
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: htmlcov
 
       - name: Deploy Allure report to GitHub Pages
         if: always()
