@@ -92,8 +92,8 @@ Triggered on:
 
 ## Test Reporting
 
-- [ Allure Test Report ](https://nadreal.github.io/qa-microservice-integration/index.html) 
-- [ Coverage Report ](htmlcov/index.html)
+- [ Allure Test Report ](https://nadreal.github.io/qa-microservice-integration/allure/) 
+- [Coverage Report](https://nadreal.github.io/qa-microservice-integration/coverage/)
 
 ## Author
 
