@@ -72,16 +72,19 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest -q --maxfail=2 --disable-warnings --cov=app --cov-report=xml --cov-report=html --alluredir=allure-results
+          pytest -v -s --maxfail=2 --disable-warnings --cov=app --cov-report=xml --cov-report=html --alluredir=allure-results
 
       - name: Stop API
         if: always()
         run: |
           if [ -f uvicorn.pid ]; then kill $(cat uvicorn.pid) || true; fi
 
-      - name: Generate Allure report (using tobix/allure-cli)
+      - name: Generate Allure / covarage report (using tobix/allure-cli)
         run: |
-          mkdir -p allure-results allure-report
+          mkdir -p public
+          cp -r allure-report public/allure
+          cp -r htmlcov public/coverage 
+          
           if [ ! -d "allure-results" ] || [ -z "$(ls -A allure-results 2>/dev/null || true)" ]; then
             echo "No allure results found; creating placeholder report."
             mkdir -p allure-report
@@ -105,7 +108,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report
+          publish_dir: ./allure-report ./htmlcov          
           publish_branch: gh-pages
           force_orphan: true
       

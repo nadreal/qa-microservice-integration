@@ -2,6 +2,8 @@ import os
 import pytest
 import httpx
 import uuid
+import psycopg2
+
 
 BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000")
 
@@ -30,3 +32,17 @@ def created_item(client, unique_item_payload):
         client.delete(f"/api/v1/items/{item['id']}")
     except Exception:
         pass
+    
+    
+
+@pytest.fixture
+def db_connection():
+    conn = psycopg2.connect(
+        host="localhost",
+        port=5432,
+        database="qa_microservice",
+        user="postgres",
+        password="postgres",
+    )
+    yield conn
+    conn.close()
